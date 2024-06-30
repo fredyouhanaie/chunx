@@ -1,0 +1,16 @@
+{application, chunx,
+ [{description, "An OTP library for handling document chunks"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache-2.0"]},
+
+  {maintainers, ["Fred Youhanaie"]},
+  {links, []}
+ ]}.
