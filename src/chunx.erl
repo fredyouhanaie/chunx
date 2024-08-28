@@ -11,12 +11,14 @@
 -module(chunx).
 
 -export([chunk_to_map/1, chunk_to_map/2, has_doc/1]).
+-export([all_mods/0]).
 
 %%--------------------------------------------------------------------
 %% @doc Return the docs for module `Mod' as a map
 %%
-%% The docs for a single module is returned as a map. The list of
-%% individual function/type docs is also converted to a list of maps.
+%% The documentaion for a single module is returned as a map. The list
+%% of individual function/type docs is also converted to a list of
+%% maps.
 %%
 %% @end
 %%--------------------------------------------------------------------
@@ -83,5 +85,18 @@ has_doc(Mod) ->
         _ ->
             false
     end.
+
+%%--------------------------------------------------------------------
+%% return a list of all the modules with documentation
+%%
+all_mods() ->
+    All_mods = [ M || {M, _} <- code:all_loaded() ],
+    F = fun(M) ->
+                case code:get_doc(M) of
+                    {ok, _} -> true;
+                    _ -> false
+                end
+        end,
+    lists:filter(F, lists:usort(All_mods)).
 
 %%--------------------------------------------------------------------
