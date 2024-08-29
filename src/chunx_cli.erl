@@ -4,13 +4,20 @@
 -export([main/1]).
 
 -define(Arguments,
-        [ #{ name => all,     long => "all",        short => $a, type => boolean },
-          #{ name => file,    long => "from-file",  short => $f, type => string },
-          #{ name => module,  long => "module",     short => $m, type => string },
-          #{ name => chunk,   long => "chunk-file", short => $c, type => string },
-          #{ name => json,    long => "json",       short => $j, type => string },
-          #{ name => quiet,   long => "quiet",      short => $q, type => boolean },
-          #{ name => verbose, long => "verbose",    short => $v, type => boolean }
+        [ #{ name => all, help => "process all the modules with docs (default)",
+             long => "-all", short => $a, type => boolean },
+          #{ name => file, help => "take list of modules from file",
+             long => "-from-file", short => $f, type => string },
+          #{ name => modules, help => "use the list of modules",
+             long => "-modules", short => $m, type => string, nargs => nonempty_list },
+          #{ name => chunks, help => "use the list of chunk files",
+             long => "-chunk-files", short => $c, type => string, nargs => nonempty_list },
+          #{ name => json, help => "produce JSON output",
+             long => "-json", short => $j, type => boolean },
+          #{ name => quiet, help => "do not produce any verbose output",
+             long => "-quiet", short => $q, type => boolean },
+          #{ name => verbose, help => "be verbose, can use multiple times",
+             long => "-verbose", short => $v, type => boolean, action => count }
         ]).
 
 -define(Commands,
