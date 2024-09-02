@@ -29,12 +29,20 @@
           #{ name => quiet, help => "do not produce any verbose output",
              long => "-quiet", short => $q, type => boolean },
           #{ name => verbose, help => "be verbose, can use multiple times",
-             long => "-verbose", short => $v, type => boolean, action => count }
+             long => "-verbose", short => $v, type => boolean, action => count },
+          #{ name => help, help => "display help/usage information",
+             long => "-help", short => $h, type => boolean}
         ]).
 
 -define(Commands,
-        #{ "list" => #{ handler => fun do_list/1 },
-           "man"  => #{ handler => fun do_man/1 }
+        #{ "list"    => #{ help => "produce a list of module names",
+                           handler => fun do_list/1 },
+           "man"     => #{ help => "generate per module mardown pages suitable for pandoc",
+                           handler => fun do_man/1 },
+           "summary" => #{ help => "produce per module summaries",
+                           handler => fun do_summary/1 },
+           "help"    => #{ help => "display help/usage information",
+                           handler => fun do_help/1 }
          }).
 
 %%====================================================================
@@ -63,6 +71,18 @@ do_list(_A) ->
 
 do_man(_A) ->
     io:format("man: not implemented yet.~n"),
+    ok.
+
+%---------------------------------------------------------------------
+
+do_summary(_A) ->
+    io:format("summary: not implemented yet.~n"),
+    ok.
+
+%---------------------------------------------------------------------
+
+do_help(_A) ->
+    io:format("help: not implemented yet.~n"),
     ok.
 
 %---------------------------------------------------------------------
