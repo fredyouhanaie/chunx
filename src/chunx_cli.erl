@@ -15,6 +15,12 @@
 %% API exports
 -export([main/1]).
 
+%%--------------------------------------------------------------------
+
+-include_lib("kernel/include/logger.hrl").
+
+%%--------------------------------------------------------------------
+
 -define(Arguments,
         [ #{ name => all, help => "process all the modules with docs (default)",
              long => "-all", short => $a, type => boolean },
@@ -50,7 +56,21 @@
 %%====================================================================
 
 main(Args) ->
-    argparse:run(Args, cli(), #{progname => chunx}).
+    %% set up default logger (single line)
+    logger:set_handler_config(default, formatter, {logger_formatter, #{}}),
+    logger:set_primary_config(level, error),
+
+    %% scan the args
+    Parsed = argparse:parse(Args, cli(), #{progname => chunx}),
+
+    case Parsed of
+        {error, Error} ->
+            ?LOG_ERROR(argparse:format_error(Error));
+        {ok, Arg_map, Path, Command} ->
+            run(Arg_map, Path, Command)
+    end,
+    timer:sleep(1), %% give the logger a chance to flush all the messages!!
+    ok.
 
 %%====================================================================
 %% Internal functions
@@ -60,6 +80,23 @@ cli() ->
     #{ arguments => ?Arguments,
        commands  => ?Commands
      }.
+
+%---------------------------------------------------------------------
+%% run a subcommand
+%%
+run(Arg_map, Path, Command) ->
+    %% check/set the verbosity
+    Level = case maps:get(verbose, Arg_map, 0) of
+                0 -> error;
+                1 -> notice;
+                2 -> info;
+                _ -> debug
+            end,
+    logger:set_primary_config(level, Level),
+    ?LOG_DEBUG(#{ arg_map => Arg_map,
+                  path    => lists:join($/, Path),
+                  command => Command }),
+    ok.
 
 %---------------------------------------------------------------------
 
