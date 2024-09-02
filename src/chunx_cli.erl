@@ -1,3 +1,15 @@
+%%%-------------------------------------------------------------------
+%%% @author Fred Youhanaie <fyrlang@anydata.co.uk>
+%%% @copyright 2024, Fred Youhanaie
+%%% @doc
+%%%
+%%% The escript for the `chunx' command line interface.
+%%%
+%%% The runnable escript will be called `chunx'.
+%%%
+%%% @end
+%%% Created : 01 Sep 2024 by Fred Youhanaie <fyrlang@anydata.co.uk>
+%%%-------------------------------------------------------------------
 -module(chunx_cli).
 
 %% API exports
