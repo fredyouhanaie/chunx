@@ -87,16 +87,16 @@ has_doc(Mod) ->
     end.
 
 %%--------------------------------------------------------------------
-%% return a list of all the modules with documentation
+%% return a list of all the modules that have EEP-48 style docs
 %%
 all_mods() ->
-    All_mods = [ M || {M, _} <- code:all_loaded() ],
+    All_mods = lists:usort([ M || {M, _} <- code:all_loaded() ]),
     F = fun(M) ->
                 case code:get_doc(M) of
                     {ok, _} -> true;
                     _ -> false
                 end
         end,
-    lists:filter(F, lists:usort(All_mods)).
+    lists:filter(F, All_mods).
 
 %%--------------------------------------------------------------------
