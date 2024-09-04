@@ -88,8 +88,9 @@ run(Arg_map, Path, Command) ->
     %% check/set the verbosity
     Level = case maps:get(verbose, Arg_map, 0) of
                 0 -> error;
-                1 -> notice;
-                2 -> info;
+                1 -> warning;
+                2 -> notice;
+                3 -> info;
                 _ -> debug
             end,
     logger:set_primary_config(level, Level),
