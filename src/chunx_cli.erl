@@ -30,6 +30,7 @@
              long => "-modules", short => $m, type => string, nargs => nonempty_list },
           #{ name => chunks, help => "use the list of chunk files",
              long => "-chunk-files", short => $c, type => string, nargs => nonempty_list },
+
           #{ name => json, help => "produce JSON output",
              long => "-json", short => $j, type => boolean },
           #{ name => quiet, help => "do not produce any verbose output",
@@ -69,7 +70,7 @@ main(Args) ->
         {ok, Arg_map, Path, Command} ->
             run(Arg_map, Path, Command)
     end,
-    timer:sleep(1), %% give the logger a chance to flush all the messages!!
+    timer:sleep(100), %% give the logger a chance to flush all the messages!!
     ok.
 
 %%====================================================================
