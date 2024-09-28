@@ -87,8 +87,13 @@ has_doc(Mod) ->
     end.
 
 %%--------------------------------------------------------------------
-%% return a list of all the modules that have EEP-48 style docs
+%% @doc return a list of all the modules that have EEP-48 style docs
 %%
+%% Returns a unique list of module names.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec all_mods() -> [module()].
 all_mods() ->
     All_mods = lists:usort([ M || {M, _} <- code:all_loaded() ]),
     F = fun(M) ->
