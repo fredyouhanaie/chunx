@@ -33,12 +33,8 @@
 
           #{ name => json, help => "produce JSON output",
              long => "-json", short => $j, type => boolean },
-          #{ name => quiet, help => "do not produce any verbose output",
-             long => "-quiet", short => $q, type => boolean },
-          #{ name => verbose, help => "be verbose, can use multiple times",
-             long => "-verbose", short => $v, type => boolean, action => count },
-          #{ name => help, help => "display help/usage information",
-             long => "-help", short => $h, type => boolean}
+          #{ name => verbose, help => "be verbose, can use multiple times for warning..debug",
+             long => "-verbose", short => $v, type => boolean, action => count }
         ]).
 
 -define(Commands,
@@ -47,9 +43,7 @@
            "man"     => #{ help => "generate per module mardown pages suitable for pandoc",
                            handler => fun do_man/1 },
            "summary" => #{ help => "produce per module summaries",
-                           handler => fun do_summary/1 },
-           "help"    => #{ help => "display help/usage information",
-                           handler => fun do_help/1 }
+                           handler => fun do_summary/1 }
          }).
 
 -define(Progname, #{progname => chunx}).
@@ -80,26 +74,38 @@ cli() ->
 
 %%--------------------------------------------------------------------
 
-do_list(_A) ->
+do_list(Args) ->
+    check_verbosity(Args),
     [ io:format("~p~n", [M]) || M <- chunx:all_mods() ],
     ok.
 
 %%--------------------------------------------------------------------
 
-do_man(_A) ->
+do_man(Args) ->
+    check_verbosity(Args),
     io:format("man: not implemented yet.~n"),
     ok.
 
 %%--------------------------------------------------------------------
 
-do_summary(_A) ->
+do_summary(Args) ->
+    check_verbosity(Args),
     io:format("summary: not implemented yet.~n"),
     ok.
 
 %%--------------------------------------------------------------------
 
-do_help(_A) ->
-    io:format("help: not implemented yet.~n"),
-    ok.
+-spec check_verbosity(map()) -> ok.
+check_verbosity(Args) ->
+    %% check/set the verbosity
+    Level = case maps:get(verbose, Args, 0) of
+                0 -> error;
+                1 -> warning;
+                2 -> notice;
+                3 -> info;
+                _ -> debug
+            end,
+    logger:set_primary_config(level, Level),
+    ?LOG_NOTICE(#{ arg_map => Args }).
 
 %%--------------------------------------------------------------------
