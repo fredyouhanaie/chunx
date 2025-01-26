@@ -53,7 +53,13 @@ cli() ->
 
 do_list(Args) ->
     check_verbosity(Args),
-    [ io:format("~p~n", [M]) || M <- chunx:all_mods() ],
+    All_mods = chunx:all_mods(),
+    case maps:get(json, Args, false) of
+        true ->
+            io:format("~s~n", [json:encode(All_mods)]);
+        false ->
+            [ io:format("~p~n", [M]) || M <- All_mods ]
+    end,
     ok.
 
 %%--------------------------------------------------------------------
