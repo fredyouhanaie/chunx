@@ -13,7 +13,7 @@
 %% Main command arguments (see `argparse')
 %%
 -define(Args_chunx_cli,
-        [ #{ name => all, help => "process all the modules with docs (default)",
+        [ #{ name => all, help => "process all the loaded modules with docs (default)",
              long => "-all", short => $a, type => boolean },
           #{ name => file, help => "take list of modules from file",
              long => "-from-file", short => $f, type => string },
