@@ -12,6 +12,7 @@
 
 -export([chunk_to_map/1, chunk_to_map/2, has_doc/1]).
 -export([all_mods/0]).
+-export([chunk_info/1]).
 
 %%--------------------------------------------------------------------
 %% @doc Return the docs for module `Mod' as a map
@@ -103,5 +104,26 @@ all_mods() ->
                 end
         end,
     lists:filter(F, All_mods).
+
+%%--------------------------------------------------------------------
+%% @doc extract the summary info of a chunk
+%%
+%% returns the module name, the language and format as a map. If error
+%% in retrieving the module chunk, we return an empty map.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec chunk_info(atom() | map()) -> map().
+chunk_info(Mod_name) when is_atom(Mod_name) ->
+    case chunk_to_map(Mod_name) of
+        {ok, Mod_map} ->
+            chunk_info(Mod_map);
+        {error, _Error} ->
+            #{}
+    end;
+
+chunk_info(Chunk_map) when is_map(Chunk_map) ->
+    F = fun (K, _V) -> lists:member(K, [mod, lang, frmt]) end,
+    maps:filter(F, Chunk_map).
 
 %%--------------------------------------------------------------------

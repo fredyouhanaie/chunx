@@ -84,8 +84,23 @@ do_man(Args) ->
 
 do_summary(Args) ->
     check_verbosity(Args),
-    io:format("summary: not implemented yet.~n"),
-    ok.
+    case get_mods_source(Args) of
+        {ok, Source} ->
+            Mod_names = get_mod_names(Source, Args),
+            Mods_info1 = [ chunx:chunk_info(M) || M <- Mod_names ],
+            %% remove the empty maps
+            Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
+            case maps:get(json, Args, false) of
+                true ->
+                    io:format("~s~n", [json:encode(Mods_info2)]);
+                false ->
+                    [ io:format("~p~n", [M]) || M <- Mods_info2 ]
+            end,
+            ok;
+        {error, Error} ->
+            ?LOG_ERROR(Error),
+            error
+    end.
 
 %%--------------------------------------------------------------------
 
