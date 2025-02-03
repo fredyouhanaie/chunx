@@ -13,6 +13,9 @@
 -export([chunk_to_map/1, chunk_to_map/2, has_doc/1]).
 -export([all_mods/0]).
 -export([chunk_info/1]).
+-export([get_docs_from_beam/1]).
+-export([get_docs_from_source/1]).
+-export([get_docs_from_chunk/1]).
 
 %%--------------------------------------------------------------------
 %% @doc Return the docs for module `Mod' as a map
@@ -125,5 +128,56 @@ chunk_info(Mod_name) when is_atom(Mod_name) ->
 chunk_info(Chunk_map) when is_map(Chunk_map) ->
     F = fun (K, _V) -> lists:member(K, [mod, lang, frmt]) end,
     maps:filter(F, Chunk_map).
+
+%%--------------------------------------------------------------------
+%% @doc get the doc chunks from the beam files
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec get_docs_from_beam(file:filename_all()) ->
+          {error, missing_chunk} | {ok, {module(), tuple()}}.
+get_docs_from_beam(File) ->
+    case beam_lib:chunks(File, [documentation]) of
+        {error, beam_lib, {missing_chunk, _, _}} ->
+            {error, missing_chunk};
+        {ok, {Mod, [{documentation, Chunk}]}} ->
+            {ok, {Mod, Chunk}}
+    end.
+
+%%--------------------------------------------------------------------
+%% @doc get the doc chunks from the source file
+%%
+%% This is equivalent to the edoc command:
+%%
+%% `edoc -chunks files FILENAME'
+%%
+%% The chunk file will end up in a subdirectory called `./chunks/'.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec get_docs_from_source(file:filename_all()) -> ok.
+get_docs_from_source(File) ->
+    Opts = [ {doclet, edoc_doclet_chunks},
+             {layout, edoc_layout_chunks},
+             {preprocess, true} ],
+    edoc:files([File], Opts).
+
+%%--------------------------------------------------------------------
+%% @doc get the doc chunks from the chunk file
+%%
+%% We expect the filename to be of the form `DIR/MODULE.chunk'.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec get_docs_from_chunk(file:filename_all()) ->
+          {error, term()} | {ok, module(), map()}.
+get_docs_from_chunk(File) ->
+    case file:read_file(File) of
+        {ok, Bin} ->
+            Mod = list_to_atom(filename:basename(File, ".chunk")),
+            {ok, Mod, binary_to_term(Bin)};
+        Error ->
+            Error
+    end.
 
 %%--------------------------------------------------------------------
