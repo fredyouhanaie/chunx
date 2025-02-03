@@ -13,19 +13,31 @@
 %% Main command arguments (see `argparse')
 %%
 -define(Args_chunx_cli,
-        [ #{ name => all, help => "process all the loaded modules with docs (default)",
-             long => "-all", short => $a, type => boolean },
-          #{ name => file, help => "take list of modules from file",
-             long => "-from-file", short => $f, type => string },
-          #{ name => modules, help => "use the list of modules",
-             long => "-modules", short => $m, type => string, nargs => nonempty_list },
-          #{ name => chunks, help => "use the list of chunk files",
-             long => "-chunk-files", short => $c, type => string, nargs => nonempty_list },
+        [
+         %% selection of modules, only one is allowed
+         #{ name => all, help => "process all the modules with docs (default)",
+            long => "-all", short => $a, type => boolean },
+         #{ name => file, help => "take the list of modules from file",
+            long => "-from-file", short => $f, type => string },
+         #{ name => modules, help => "use the list of modules",
+            long => "-modules", short => $m, type => string, nargs => nonempty_list },
 
-          #{ name => json, help => "produce JSON output",
-             long => "-json", short => $j, type => boolean },
-          #{ name => verbose, help => "be verbose, can use multiple times for warning..debug",
-             long => "-verbose", short => $v, type => boolean, action => count }
+         %% source of doc chunks, only one is allowed
+         #{ name => loaded, help => "use the list of loaded modules (default)",
+            long => "-loaded-mods", short => $l, type => boolean },
+         #{ name => chunks, help => "use the list of chunk files (*.chunk)",
+            long => "-chunk-files", short => $c, type => string, nargs => nonempty_list },
+         #{ name => beams, help => "use the list of beam files (*.beam)",
+            long => "-beam-files", short => $b, type => string, nargs => nonempty_list },
+         #{ name => sources, help => "use the list of source files (*.erl)",
+            long => "-source-files", short => $s, type => string, nargs => nonempty_list },
+
+         %% output format
+         #{ name => json, help => "produce JSON output",
+            long => "-json", short => $j, type => boolean },
+
+         #{ name => verbose, help => "be verbose, can use multiple times for warning..debug",
+            long => "-verbose", short => $v, type => boolean, action => count }
         ]).
 
 %%--------------------------------------------------------------------
