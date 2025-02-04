@@ -22,15 +22,8 @@
          #{ name => modules, help => "use the list of modules",
             long => "-modules", short => $m, type => string, nargs => nonempty_list },
 
-         %% source of doc chunks, only one is allowed
-         #{ name => loaded, help => "use the list of loaded modules (default)",
-            long => "-loaded-mods", short => $l, type => boolean },
-         #{ name => chunks, help => "use the list of chunk files (*.chunk)",
-            long => "-chunk-files", short => $c, type => string, nargs => nonempty_list },
-         #{ name => beams, help => "use the list of beam files (*.beam)",
-            long => "-beam-files", short => $b, type => string, nargs => nonempty_list },
-         #{ name => sources, help => "use the list of source files (*.erl)",
-            long => "-source-files", short => $s, type => string, nargs => nonempty_list },
+         #{ name => source, help => "source of docs, chunk/erl/beam files (default=loaded modules)",
+            long => "--source", short => $s, type => {binary, [<<"chunk">>, <<"beam">>, <<"erl">>]} },
 
          %% output format
          #{ name => json, help => "produce JSON output",
