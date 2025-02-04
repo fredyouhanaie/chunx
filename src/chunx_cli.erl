@@ -23,7 +23,7 @@
 
 %%--------------------------------------------------------------------
 
--type(mod_source()) :: all | file | modules | chunks.
+-type(mod_choice()) :: all | file | modules | chunks.
 
 %%--------------------------------------------------------------------
 
@@ -58,9 +58,10 @@ cli() ->
 -spec do_list(map()) -> ok.
 do_list(Args) ->
     check_verbosity(Args),
-    case get_mods_source(Args) of
-        {ok, Source} ->
-            Mods = get_mod_names(Source, Args),
+
+    case get_mods_choice(Args) of
+        {ok, Choice} ->
+            Mods = get_mod_names(Choice, Args),
             case maps:get(json, Args, false) of
                 true ->
                     io:format("~s~n", [json:encode(Mods)]);
@@ -84,9 +85,9 @@ do_man(Args) ->
 
 do_summary(Args) ->
     check_verbosity(Args),
-    case get_mods_source(Args) of
-        {ok, Source} ->
-            Mod_names = get_mod_names(Source, Args),
+    case get_mods_choice(Args) of
+        {ok, Choice} ->
+            Mod_names = get_mod_names(Choice, Args),
             Mods_info1 = [ chunx:chunk_info(M) || M <- Mod_names ],
             %% remove the empty maps
             Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
@@ -118,9 +119,9 @@ check_verbosity(Args) ->
     ?LOG_NOTICE(#{ arg_map => Args }).
 
 %%--------------------------------------------------------------------
-%% Return the list of modules for the supplied source
+%% Return the list of modules for the supplied choice
 %%
--spec get_mod_names(mod_source(), map()) -> [module()].
+-spec get_mod_names(mod_choice(), map()) -> [module()].
 get_mod_names(all, _Args) ->
     chunx:all_mods();
 
@@ -141,19 +142,19 @@ get_mod_names(chunks, Args) ->
     [ list_to_atom(filename:basename(C, ".chunk")) || C <- Chunk_files ].
 
 %%--------------------------------------------------------------------
-%% Get/check the source of modules option
+%% Get/check the choice of modules options
 %%
--spec get_mods_source(map()) -> {ok, mod_source()} | {error, term()}.
-get_mods_source(Args) ->
+-spec get_mods_choice(map()) -> {ok, mod_choice()} | {error, term()}.
+get_mods_choice(Args) ->
     Options = lists:sort([all, file, modules, chunks]),
     Actuals = lists:sort(maps:keys(Args)),
-    Sources = lists:filter(fun (X) -> lists:member(X, Options) end,
+    Choices = lists:filter(fun (X) -> lists:member(X, Options) end,
                            Actuals),
-    case length(Sources) of
+    case length(Choices) of
         0 -> %% default
             {ok, all};
         1 ->
-            {ok, hd(Sources)};
+            {ok, hd(Choices)};
         _ ->
             {error, "only one of 'all', 'file', 'modules' or 'chunks' allowed"}
     end.
