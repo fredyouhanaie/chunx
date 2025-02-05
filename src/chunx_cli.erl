@@ -135,7 +135,9 @@ get_mod_names(file, Args) ->
     end;
 
 get_mod_names(modules, Args) ->
-    [ list_to_atom(M) || M <- map_get(modules, Args) ];
+    Mods = [ list_to_atom(M) || M <- map_get(modules, Args) ],
+    F = fun (M) -> lists:member(M, Mods) end,
+    lists:filter(F, chunx:all_mods());
 
 get_mod_names(chunks, Args) ->
     Chunk_files = map_get(chunks, Args),
