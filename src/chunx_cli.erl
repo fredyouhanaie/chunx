@@ -35,8 +35,8 @@
 
 main(Args) ->
     %% set up default logger (single line)
-    logger:set_handler_config(default, formatter, {logger_formatter, #{}}),
-    logger:set_primary_config(level, error),
+    ok = logger:set_handler_config(default, formatter, {logger_formatter, #{}}),
+    ok = logger:set_primary_config(level, error),
 
     %% scan the args and run
     argparse:run(Args, cli(), ?Progname),
@@ -55,7 +55,7 @@ cli() ->
 
 %%--------------------------------------------------------------------
 
--spec do_list(map()) -> ok.
+-spec do_list(map()) -> ok | error.
 do_list(Args) ->
     check_verbosity(Args),
 
@@ -66,9 +66,9 @@ do_list(Args) ->
                 true ->
                     io:format("~s~n", [json:encode(Mods)]);
                 false ->
-                    [ io:format("~p~n", [M]) || M <- Mods ]
-            end,
-            ok;
+                    [ io:format("~p~n", [M]) || M <- Mods ],
+                    ok
+            end;
         {error, Error} ->
             ?LOG_ERROR(Error),
             error
@@ -95,9 +95,9 @@ do_summary(Args) ->
                 true ->
                     io:format("~s~n", [json:encode(Mods_info2)]);
                 false ->
-                    [ io:format("~p~n", [M]) || M <- Mods_info2 ]
-            end,
-            ok;
+                    [ io:format("~p~n", [M]) || M <- Mods_info2 ],
+                    ok
+            end;
         {error, Error} ->
             ?LOG_ERROR(Error),
             error
@@ -115,8 +115,9 @@ check_verbosity(Args) ->
                 3 -> info;
                 _ -> debug
             end,
-    logger:set_primary_config(level, Level),
-    ?LOG_NOTICE(#{ arg_map => Args }).
+    ok = logger:set_primary_config(level, Level),
+    ?LOG_NOTICE(#{ arg_map => Args }),
+    ok.
 
 %%--------------------------------------------------------------------
 %% Return the list of modules for the supplied choice
