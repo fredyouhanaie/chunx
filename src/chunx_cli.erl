@@ -80,19 +80,17 @@ do_man(Args) ->
 
 do_summary(Args) ->
     check_verbosity(Args),
-    case get_mods_choice(Args) of
-        {ok, Choice} ->
-            Mod_names = get_mod_names(Choice, Args),
-            Mods_info1 = [ chunx:chunk_info(M) || M <- Mod_names ],
+    case check_args(Args) of
+        {ok, loaded_mods, Mods} ->
+            Mods_info1 = [ chunx:chunk_info(M) || M <- Mods ],
             %% remove the empty maps
             Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
-            case maps:get(json, Args, false) of
-                true ->
-                    io:format("~s~n", [json:encode(Mods_info2)]);
-                false ->
-                    [ io:format("~p~n", [M]) || M <- Mods_info2 ],
-                    ok
-            end;
+            print(Mods_info2, Args);
+        {ok, beam, Mods_files} ->
+            Mods_info1 = [ chunx:chunk_info_from_beam(F) ||
+                             {_M,F} <- maps:to_list(Mods_files) ],
+            Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
+            print(Mods_info2, Args);
         {error, Error} ->
             ?LOG_ERROR(Error),
             error

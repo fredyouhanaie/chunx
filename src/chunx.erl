@@ -13,9 +13,13 @@
 -export([chunk_to_map/1, chunk_to_map/2, has_doc/1]).
 -export([all_mods/0]).
 -export([chunk_info/1]).
--export([get_docs_from_beam/1]).
+-export([get_docs_from_beam/1, chunk_info_from_beam/1]).
 -export([get_docs_from_source/1]).
 -export([get_docs_from_chunk/1]).
+
+%%--------------------------------------------------------------------
+
+-include_lib("kernel/include/logger.hrl").
 
 %%--------------------------------------------------------------------
 %% @doc Return the docs for module `Mod' as a map
@@ -128,6 +132,18 @@ chunk_info(Mod_name) when is_atom(Mod_name) ->
 chunk_info(Chunk_map) when is_map(Chunk_map) ->
     F = fun (K, _V) -> lists:member(K, [mod, lang, frmt]) end,
     maps:filter(F, Chunk_map).
+
+%%--------------------------------------------------------------------
+
+chunk_info_from_beam(File) ->
+    case get_docs_from_beam(File) of
+        {ok, {Mod, Chunk}} ->
+            Chunk_map = chunk_to_map(Mod, Chunk),
+            chunk_info(Chunk_map);
+        Error ->
+            ?LOG_WARNING("could not read beam file: ~p.", [Error]),
+            #{}
+    end.
 
 %%--------------------------------------------------------------------
 %% @doc get the doc chunks from the beam files
