@@ -54,7 +54,8 @@ cli() ->
      }.
 
 %%--------------------------------------------------------------------
-
+%% process and run the `list' subcommand
+%%
 -spec do_list(map()) -> ok | error.
 do_list(Args) ->
     check_verbosity(Args),
@@ -70,14 +71,18 @@ do_list(Args) ->
     end.
 
 %%--------------------------------------------------------------------
-
+%% process and run the `man' subcommand
+%%
+-spec do_man(map()) -> ok.
 do_man(Args) ->
     check_verbosity(Args),
     io:format("man: not implemented yet.~n"),
     ok.
 
 %%--------------------------------------------------------------------
-
+%% process and run the `summary' subcommand
+%%
+-spec do_summary(map()) -> ok.
 do_summary(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
@@ -97,7 +102,14 @@ do_summary(Args) ->
     end.
 
 %%--------------------------------------------------------------------
-
+%% @doc print the generated data based on the command line flags
+%%
+%% We expect the data to be a list. For JSON, there cannot be any
+%% `tuples' in the list.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec print(list(), map()) -> ok.
 print(Data, Args) ->
     case maps:get(json, Args, false) of
         true ->
@@ -108,7 +120,13 @@ print(Data, Args) ->
     end.
 
 %%--------------------------------------------------------------------
-
+%% @doc check/set the requested level of verbosity on the command line
+%%
+%% The default is `error', each `-v' will increase it from `warning'
+%% to `debug'.
+%%
+%% @end
+%%--------------------------------------------------------------------
 -spec check_verbosity(map()) -> ok.
 check_verbosity(Args) ->
     %% check/set the verbosity

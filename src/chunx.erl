@@ -134,7 +134,14 @@ chunk_info(Chunk_map) when is_map(Chunk_map) ->
     maps:filter(F, Chunk_map).
 
 %%--------------------------------------------------------------------
-
+%% @doc check for and extract the doc chunk from a beam file
+%%
+%% The doc chunk will be returned as a map. If it is missing, an empty
+%% map is returned.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec chunk_info_from_beam(file:filename_all()) -> map().
 chunk_info_from_beam(File) ->
     case get_docs_from_beam(File) of
         {ok, {Mod, Chunk}} ->
