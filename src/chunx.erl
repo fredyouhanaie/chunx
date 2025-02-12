@@ -13,7 +13,7 @@
 -export([chunk_to_map/1, chunk_to_map/2, has_doc/1]).
 -export([all_mods/0]).
 -export([chunk_info/1]).
--export([get_docs_from_beam/1, chunk_info_from_beam/1]).
+-export([get_docs_from_beam/1, chunk_info_from_beam/1, beam_chunk_to_map/1]).
 -export([get_docs_from_source/1]).
 -export([get_docs_from_chunk/1]).
 
@@ -165,6 +165,23 @@ get_docs_from_beam(File) ->
             {error, missing_chunk};
         {ok, {Mod, [{documentation, Chunk}]}} ->
             {ok, {Mod, Chunk}}
+    end.
+
+%%--------------------------------------------------------------------
+%% @doc generate chunk map from a beam file
+%%
+%% If the beam file does not contain a docs chunk, an empty map is
+%% returned.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec beam_chunk_to_map(file:filename_all()) -> map().
+beam_chunk_to_map(File) ->
+    case get_docs_from_beam(File) of
+        {error, missing_chunk} ->
+            #{};
+        {ok, {Mod, Chunk}} ->
+            chunk_to_map(Mod, Chunk)
     end.
 
 %%--------------------------------------------------------------------
