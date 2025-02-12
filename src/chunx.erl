@@ -16,6 +16,7 @@
 -export([get_docs_from_beam/1, chunk_info_from_beam/1, beam_chunk_to_map/1]).
 -export([get_docs_from_source/1]).
 -export([get_docs_from_chunk/1]).
+-export([untuplize/1]).
 
 %%--------------------------------------------------------------------
 
@@ -219,5 +220,30 @@ get_docs_from_chunk(File) ->
         Error ->
             Error
     end.
+
+%%--------------------------------------------------------------------
+%% @doc recursively convert all tuples in `Term' to lists
+%%
+%% This is for the benefit of `json:encode/1', which cannot handle
+%% tuples.
+%%
+%% Currently, we do not touch map keys. This should be OK for our use
+%% case since the map keys are atoms.
+%%
+%% @end
+%%--------------------------------------------------------------------
+-spec untuplize(term()) -> term().
+untuplize(Term) when is_tuple(Term) ->
+    untuplize(tuple_to_list(Term));
+
+untuplize(Term) when is_list(Term) ->
+    [ untuplize(T) || T <- Term ];
+
+untuplize(Term) when is_map(Term) ->
+    F = fun(_K, V) -> untuplize(V) end,
+    maps:map(F, Term);
+
+untuplize(Term) ->
+    Term.
 
 %%--------------------------------------------------------------------

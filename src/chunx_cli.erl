@@ -138,7 +138,7 @@ do_docs(Args) ->
 print(Data, Args) ->
     case maps:get(json, Args, false) of
         true ->
-            io:format("~s~n", [json:encode(Data)]);
+            io:format("~s~n", [json:encode(chunx:untuplize(Data))]);
         false ->
             [ io:format("~p.~n", [M]) || M <- Data ],
             ok
