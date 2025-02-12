@@ -140,7 +140,7 @@ print(Data, Args) ->
         true ->
             io:format("~s~n", [json:encode(Data)]);
         false ->
-            [ io:format("~p~n", [M]) || M <- Data ],
+            [ io:format("~p.~n", [M]) || M <- Data ],
             ok
     end.
 
