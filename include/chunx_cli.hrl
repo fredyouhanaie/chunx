@@ -45,7 +45,9 @@
            "man"     => #{ help => "generate per module mardown pages suitable for pandoc",
                            handler => fun do_man/1 },
            "summary" => #{ help => "produce per module summaries",
-                           handler => fun do_summary/1 }
+                           handler => fun do_summary/1 },
+           "docs"    => #{ help => "produce per module docs",
+                           handler => fun do_docs/1 }
          }).
 
 %%--------------------------------------------------------------------

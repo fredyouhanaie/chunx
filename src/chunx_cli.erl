@@ -102,6 +102,31 @@ do_summary(Args) ->
     end.
 
 %%--------------------------------------------------------------------
+%% print the per module docs
+%%
+do_docs(Args) ->
+    check_verbosity(Args),
+    case check_args(Args) of
+        {ok, loaded_mods, Mods} ->
+            Mod_docs1 = [ D ||
+                            {ok, D} <- [ chunx:chunk_to_map(M)
+                                         || M <- Mods ]
+                        ],
+            %% remove the empty maps
+            Mod_docs2 = lists:filter(fun (M) -> M =/= #{} end, Mod_docs1),
+            print(Mod_docs2, Args);
+        {ok, beam, Mods_files} ->
+            Mod_docs1 = [ chunx:beam_chunk_to_map(F) ||
+                            {_M,F} <- maps:to_list(Mods_files) ],
+            %% remove the empty maps
+            Mod_docs2 = lists:filter(fun (M) -> M =/= #{} end, Mod_docs1),
+            print(Mod_docs2, Args);
+        {error, Error} ->
+            ?LOG_ERROR(Error),
+            error
+    end.
+
+%%--------------------------------------------------------------------
 %% @doc print the generated data based on the command line flags
 %%
 %% We expect the data to be a list. For JSON, there cannot be any
