@@ -93,7 +93,7 @@ do_man(Args) ->
 do_summary(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
-        {ok, loaded_mods, Mods} ->
+        {ok, available_mods, Mods} ->
             Mods_info1 = [ chunx:chunk_info(M) || M <- Mods ],
             %% remove the empty maps
             Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
@@ -114,7 +114,7 @@ do_summary(Args) ->
 do_docs(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
-        {ok, loaded_mods, Mods} ->
+        {ok, available_mods, Mods} ->
             Mod_docs1 = [ D ||
                             {ok, D} <- [ chunx:chunk_to_map(M)
                                          || M <- Mods ]
@@ -219,7 +219,7 @@ get_mods_choice(Args) ->
 %% `--source' should be one of `chunk', `beam' or `erl'. We expect
 %% appropriate filenames to be provided with `--doc-sources'.
 %%
-%% If `--source' is not given, then the currently loaded modules are
+%% If `--source' is not given, then the currently available modules are
 %% used, and `--doc-sources', if given, will be ignored.
 %%
 %% If `--doc-sources' is not given, then an empty list will be used,
@@ -233,9 +233,9 @@ get_mods_choice(Args) ->
           {error, term()}.
 check_args(Args) ->
     {Source, Mods_files} =
-        case maps:get(source, Args, loaded_mods) of
-            loaded_mods ->
-                {loaded_mods, chunx:all_mods()};
+        case maps:get(source, Args, available_mods) of
+            available_mods ->
+                {available_mods, chunx:all_mods()};
             File_type ->
                 SS = binary_to_atom(File_type),
                 FF = maps:get(docsources, Args, []),
@@ -246,7 +246,7 @@ check_args(Args) ->
     case get_mods_choice(Args) of
         {ok, Choice} ->
             case Source of
-                loaded_mods when is_list(Mods_files) ->
+                available_mods when is_list(Mods_files) ->
                     MF2 = get_mod_names(Choice, Mods_files, Args);
                 _ ->
                     Mods_choice = get_mod_names(Choice, maps:keys(Mods_files), Args),

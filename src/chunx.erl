@@ -104,7 +104,8 @@ has_doc(Mod) ->
 %%--------------------------------------------------------------------
 -spec all_mods() -> [module()].
 all_mods() ->
-    All_mods = lists:usort([ M || {M, _} <- code:all_loaded() ]),
+    All_mods = lists:usort([ list_to_atom(M)
+                             || {M, _, _} <- code:all_available() ]),
     F = fun(M) ->
                 case code:get_doc(M) of
                     {ok, _} -> true;
