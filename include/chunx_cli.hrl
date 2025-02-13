@@ -41,13 +41,13 @@
 %%
 -define(Cmds_chunx_cli,
         #{ "list"    => #{ help => "produce a list of module names",
-                           handler => fun do_list/1 },
+                           handler => fun chunx_cli:do_list/1 },
            "man"     => #{ help => "generate per module mardown pages suitable for pandoc",
-                           handler => fun do_man/1 },
+                           handler => fun chunx_cli:do_man/1 },
            "summary" => #{ help => "produce per module summaries",
-                           handler => fun do_summary/1 },
+                           handler => fun chunx_cli:do_summary/1 },
            "docs"    => #{ help => "produce per module docs",
-                           handler => fun do_docs/1 }
+                           handler => fun chunx_cli:do_docs/1 }
          }).
 
 %%--------------------------------------------------------------------

@@ -14,6 +14,7 @@
 
 %% API exports
 -export([main/1]).
+-export([do_docs/1, do_list/1, do_man/1, do_summary/1]).
 
 %%--------------------------------------------------------------------
 
