@@ -46,3 +46,17 @@ chunk_info_test_() ->
      ] }.
 
 %%--------------------------------------------------------------------
+
+chunk_info_beam_test_() ->
+    {"chunk info/summary from beam tests",
+     [ { "chunk_info by module, missing chunk",
+         ?_assertEqual(#{},
+                       chunx:chunk_info_from_beam(code:which(chunx))) },
+       { "chunk_info by module, containing chunk",
+         ?_assertEqual(#{mod  => lists,
+                         frmt => <<"text/markdown">>,
+                         lang => erlang},
+                       chunx:chunk_info_from_beam(code:which(lists))) }
+     ] }.
+
+%%--------------------------------------------------------------------
