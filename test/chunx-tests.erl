@@ -30,3 +30,19 @@ chunx_test_() ->
      ]}.
 
 %%--------------------------------------------------------------------
+
+chunk_info_test_() ->
+    {"chunk info/summary tests",
+     [ { "chunk_info by module, missing chunk",
+         ?_assertEqual(#{mod  => chunx,
+                         frmt => <<"application/erlang+html">>,
+                         lang => erlang},
+                       chunx:chunk_info(chunx)) },
+       { "chunk_info by module, containing chunk",
+         ?_assertEqual(#{mod  => lists,
+                         frmt => <<"text/markdown">>,
+                         lang => erlang},
+                       chunx:chunk_info(lists)) }
+     ] }.
+
+%%--------------------------------------------------------------------
