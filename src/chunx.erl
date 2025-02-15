@@ -96,23 +96,17 @@ has_doc(Mod) ->
     end.
 
 %%--------------------------------------------------------------------
-%% @doc return a list of all the modules that have EEP-48 style docs
+%% @doc return a list of all the available modules.
 %%
-%% Returns a unique list of module names.
+%% Returns a unique sorted list of module names, whether they have
+%% embedded docs or not..
 %%
 %% @end
 %%--------------------------------------------------------------------
 -spec all_mods() -> [module()].
 all_mods() ->
-    All_mods = lists:usort([ list_to_atom(M)
-                             || {M, _, _} <- code:all_available() ]),
-    F = fun(M) ->
-                case code:get_doc(M) of
-                    {ok, _} -> true;
-                    _ -> false
-                end
-        end,
-    lists:filter(F, All_mods).
+    lists:usort([ list_to_atom(M)
+                  || {M, _, _} <- code:all_available() ]).
 
 %%--------------------------------------------------------------------
 %% @doc extract the summary info of a chunk
