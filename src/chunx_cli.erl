@@ -30,6 +30,9 @@
 
 -define(Progname, #{progname => chunx}).
 
+-define(Remove_empty_maps(Map_list),
+        lists:filter(fun (M) -> M =/= #{} end, Map_list)).
+
 %%--------------------------------------------------------------------
 
 -ifdef(EUNIT).
@@ -94,15 +97,14 @@ do_summary(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
         {ok, available_mods, Mods} ->
-            Mods_info1 = [ chunx:chunk_info(M) || M <- Mods ],
-            %% remove the empty maps
-            Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
-            print(Mods_info2, Args);
+            Mods_info = [ chunx:chunk_info(M) || M <- Mods ],
+            print(?Remove_empty_maps(Mods_info), Args);
+
         {ok, beam, Mods_files} ->
-            Mods_info1 = [ chunx:chunk_info_from_beam(F) ||
-                             {_M,F} <- maps:to_list(Mods_files) ],
-            Mods_info2 = lists:filter(fun (M) -> M =/= #{} end, Mods_info1),
-            print(Mods_info2, Args);
+            Mods_info = [ chunx:chunk_info_from_beam(F) ||
+                            {_M,F} <- maps:to_list(Mods_files) ],
+            print(?Remove_empty_maps(Mods_info), Args);
+
         {error, Error} ->
             ?LOG_ERROR(Error),
             error
@@ -115,19 +117,17 @@ do_docs(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
         {ok, available_mods, Mods} ->
-            Mod_docs1 = [ D ||
-                            {ok, D} <- [ chunx:chunk_to_map(M)
-                                         || M <- Mods ]
-                        ],
-            %% remove the empty maps
-            Mod_docs2 = lists:filter(fun (M) -> M =/= #{} end, Mod_docs1),
-            print(Mod_docs2, Args);
+            Mod_docs = [ D ||
+                           {ok, D} <- [ chunx:chunk_to_map(M)
+                                        || M <- Mods ]
+                       ],
+            print(?Remove_empty_maps(Mod_docs), Args);
+
         {ok, beam, Mods_files} ->
-            Mod_docs1 = [ chunx:beam_chunk_to_map(F) ||
-                            {_M,F} <- maps:to_list(Mods_files) ],
-            %% remove the empty maps
-            Mod_docs2 = lists:filter(fun (M) -> M =/= #{} end, Mod_docs1),
-            print(Mod_docs2, Args);
+            Mod_docs = [ chunx:beam_chunk_to_map(F) ||
+                           {_M,F} <- maps:to_list(Mods_files) ],
+            print(?Remove_empty_maps(Mod_docs), Args);
+
         {error, Error} ->
             ?LOG_ERROR(Error),
             error
