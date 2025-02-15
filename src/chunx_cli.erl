@@ -49,7 +49,13 @@ main(Args) ->
     ok = logger:set_primary_config(level, error),
 
     %% scan the args and run
-    argparse:run(Args, cli(), ?Progname),
+    case argparse:run(Args, cli(), ?Progname) of
+        {ok, Result, Args_map} ->
+            print(Result, Args_map);
+
+        {error, Err} ->
+            ?LOG_ERROR(Err)
+    end,
 
     timer:sleep(100), %% give the logger a chance to flush all the messages!!
     ok.
@@ -66,53 +72,54 @@ cli() ->
 %%--------------------------------------------------------------------
 %% process and run the `list' subcommand
 %%
--spec do_list(map()) -> ok | error.
+-spec do_list(map()) -> {ok, [term()], map()} | {error, term()}.
 do_list(Args) ->
     check_verbosity(Args),
 
     case check_args(Args) of
         {ok, _Source, Mods} when is_list(Mods) ->
-            print(Mods, Args);
+            {ok, Mods, Args};
+
         {ok, _Source, Mods_files} when is_map(Mods_files) ->
-            print(maps:keys(Mods_files), Args);
+            {ok, maps:keys(Mods_files), Args};
+
         {error, Error} ->
-            ?LOG_ERROR(Error),
-            error
+            {error, Error}
     end.
 
 %%--------------------------------------------------------------------
 %% process and run the `man' subcommand
 %%
--spec do_man(map()) -> ok.
+-spec do_man(map()) -> {ok, [term()], map()} | {error, term()}.
 do_man(Args) ->
     check_verbosity(Args),
-    io:format("man: not implemented yet.~n"),
-    ok.
+    ?LOG_WARNING("man: not implemented yet."),
+    {ok, [], Args}.
 
 %%--------------------------------------------------------------------
 %% process and run the `summary' subcommand
 %%
--spec do_summary(map()) -> ok.
+-spec do_summary(map()) -> {ok, [term()], map()} | {error, term()}.
 do_summary(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
         {ok, available_mods, Mods} ->
             Mods_info = [ chunx:chunk_info(M) || M <- Mods ],
-            print(?Remove_empty_maps(Mods_info), Args);
+            {ok, ?Remove_empty_maps(Mods_info), Args};
 
         {ok, beam, Mods_files} ->
             Mods_info = [ chunx:chunk_info_from_beam(F) ||
                             {_M,F} <- maps:to_list(Mods_files) ],
-            print(?Remove_empty_maps(Mods_info), Args);
+            {ok, ?Remove_empty_maps(Mods_info), Args};
 
         {error, Error} ->
-            ?LOG_ERROR(Error),
-            error
+            {error, Error}
     end.
 
 %%--------------------------------------------------------------------
 %% print the per module docs
 %%
+-spec do_docs(map()) -> {ok, [term()], map()} | {error, term()}.
 do_docs(Args) ->
     check_verbosity(Args),
     case check_args(Args) of
@@ -121,16 +128,15 @@ do_docs(Args) ->
                            {ok, D} <- [ chunx:chunk_to_map(M)
                                         || M <- Mods ]
                        ],
-            print(?Remove_empty_maps(Mod_docs), Args);
+            {ok, ?Remove_empty_maps(Mod_docs), Args};
 
         {ok, beam, Mods_files} ->
             Mod_docs = [ chunx:beam_chunk_to_map(F) ||
                            {_M,F} <- maps:to_list(Mods_files) ],
-            print(?Remove_empty_maps(Mod_docs), Args);
+            {ok, ?Remove_empty_maps(Mod_docs), Args};
 
         {error, Error} ->
-            ?LOG_ERROR(Error),
-            error
+            {error, Error}
     end.
 
 %%--------------------------------------------------------------------
