@@ -55,7 +55,11 @@ chunk_to_map(Mod, Chunk) ->
            mdoc  => Mod_docs,
            mdata => Metadata,
            docs  => docs_to_map(Docs, []) },
-    M.
+    %% skip the generated docs
+    case is_map_key(generated, Metadata) of
+        true  -> #{};
+        false -> M
+    end.
 
 %%--------------------------------------------------------------------
 %% @doc convert the list of doc tuples to a list of maps.
@@ -86,11 +90,12 @@ docs_to_map([D|Docs], Maps) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec has_doc(Mod::module()) -> false | {true, term()}.
+-spec has_doc(Mod::module()) -> false | true.
 has_doc(Mod) ->
     case code:get_doc(Mod) of
-        {ok, Doc} ->
-            {true, Doc};
+        {ok, {docs_v1, _, _, _, _, Metadata, _}} ->
+            %% we treat `generated' docs as `false'
+            not maps:get(generated, Metadata, false);
         _ ->
             false
     end.

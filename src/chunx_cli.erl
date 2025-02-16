@@ -33,6 +33,9 @@
 -define(Remove_empty_maps(Map_list),
         lists:filter(fun (M) -> M =/= #{} end, Map_list)).
 
+-define(Mods_with_docs(Mods_list),
+        lists:filter(fun chunx:has_doc/1, Mods_list)).
+
 %%--------------------------------------------------------------------
 
 -ifdef(EUNIT).
@@ -78,10 +81,10 @@ do_list(Args) ->
 
     case check_args(Args) of
         {ok, _Source, Mods} when is_list(Mods) ->
-            {ok, Mods, Args};
+            {ok, ?Mods_with_docs(Mods), Args};
 
         {ok, _Source, Mods_files} when is_map(Mods_files) ->
-            {ok, maps:keys(Mods_files), Args};
+            {ok, ?Mods_with_docs(maps:keys(Mods_files)), Args};
 
         {error, Error} ->
             {error, Error}
