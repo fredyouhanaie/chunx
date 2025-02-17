@@ -23,6 +23,8 @@ chunx_test_() ->
          ?_assertMatch(true, chunx:has_doc(lists)) },
        { "has_doc/1 fictitious module",
          ?_assertMatch(false, chunx:has_doc(lliissttss)) },
+       { "chunk_to_map/1 generated module",
+         ?_assertEqual({ok, #{}}, chunx:chunk_to_map(chunx)) },
        { "chunk_to_map/1 existing module",
          ?_assertMatch({ok, M} when is_map(M), chunx:chunk_to_map(lists)) },
        { "chunk_to_map/1 fictitious module",
