@@ -162,10 +162,11 @@ chunk_info_from_beam(File) ->
           {error, missing_chunk} | {ok, {module(), tuple()}}.
 get_docs_from_beam(File) ->
     case beam_lib:chunks(File, [documentation]) of
-        {error, beam_lib, {missing_chunk, _, _}} ->
-            {error, missing_chunk};
         {ok, {Mod, [{documentation, Chunk}]}} ->
-            {ok, {Mod, Chunk}}
+            {ok, {Mod, Chunk}};
+
+        _Error ->
+            {error, bad_beam}
     end.
 
 %%--------------------------------------------------------------------
@@ -179,8 +180,9 @@ get_docs_from_beam(File) ->
 -spec beam_chunk_to_map(file:filename_all()) -> map().
 beam_chunk_to_map(File) ->
     case get_docs_from_beam(File) of
-        {error, missing_chunk} ->
+        {error, _} ->
             #{};
+
         {ok, {Mod, Chunk}} ->
             chunk_to_map(Mod, Chunk)
     end.
