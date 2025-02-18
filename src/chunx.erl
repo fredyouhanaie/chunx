@@ -159,7 +159,7 @@ chunk_info_from_beam(File) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec get_docs_from_beam(file:filename_all()) ->
-          {error, missing_chunk} | {ok, {module(), tuple()}}.
+          {error, term()} | {ok, {module(), tuple()}}.
 get_docs_from_beam(File) ->
     case beam_lib:chunks(File, [documentation]) of
         {ok, {Mod, [{documentation, Chunk}]}} ->
