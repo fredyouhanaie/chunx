@@ -47,14 +47,31 @@ chunk_info_test_() ->
 %%--------------------------------------------------------------------
 
 chunk_beam_test_() ->
-    {"chunk docs from beam tests",
-     [ { "chunk docs bad beam file",
+    {"chunk docs from beam file",
+     [ { "docs from bad beam file",
          ?_assertEqual({error, bad_beam},
                        chunx:get_docs_from_beam("bad_mod.beam")) },
 
-       { "chunk docs by module, bad beam file",
+       { "docs from beam file - missing doc chunk",
          ?_assertEqual({error, bad_beam},
-                       chunx:get_docs_from_beam(code:which(chunx))) }
+                       chunx:get_docs_from_beam(code:which(chunx))) },
+
+       { "docs from good beam file",
+         ?_assertMatch({ok, {lists, _}},
+                       chunx:get_docs_from_beam(code:which(lists))) },
+
+       { "map from beam file - bad file",
+         ?_assertEqual(#{},
+                       chunx:beam_chunk_to_map("bad_mod.beam")) },
+
+       { "map from beam file - missing doc chunk",
+         ?_assertEqual(#{},
+                       chunx:beam_chunk_to_map(code:which(chunx))) },
+
+       { "map from good beam file",
+         ?_assertMatch(#{mod := lists},
+                       chunx:beam_chunk_to_map(code:which(lists))) }
+
      ] }.
 
 %%--------------------------------------------------------------------
