@@ -90,3 +90,24 @@ chunk_info_beam_test_() ->
      ] }.
 
 %%--------------------------------------------------------------------
+
+untuplize_test_() ->
+    {"untuplize tests",
+     [ { "number",
+         ?_assertEqual(42, chunx:untuplize(42)) },
+       { "atom",
+         ?_assertEqual(an_atom, chunx:untuplize(an_atom)) },
+       { "string",
+         ?_assertEqual("a string", chunx:untuplize("a string")) },
+       { "list",
+         ?_assertEqual([1, 2, 3, 4], chunx:untuplize([1, 2, 3, 4])) },
+       { "tuple",
+         ?_assertEqual([a, b, c], chunx:untuplize({a, b, c})) },
+       { "nested tuples",
+         ?_assertEqual([a, [b, c], d], chunx:untuplize({a, {b, c}, d})) },
+       { "map with tuples",
+         ?_assertEqual(#{nums => [1, 2, 3], abc => [a, b, c]},
+                       chunx:untuplize(#{nums => {1, 2, 3}, abc => {a, b, c}})) }
+     ] }.
+
+%%--------------------------------------------------------------------
