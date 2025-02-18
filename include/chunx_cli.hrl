@@ -23,9 +23,9 @@
             long => "-modules", short => $m, type => string, nargs => nonempty_list },
 
          %% source of doc chunks, only one is allowed
-         #{ name => source, help => "source of docs, chunk/erl/beam files (default=all available modules)",
-            long => "-source", short => $s, type => {binary, [<<"chunk">>, <<"beam">>, <<"erl">>]} },
-         #{ name => docsources, help => "chunk/erl/beam files",
+         #{ name => source, help => "source of docs, chunk/beam files (default=all available modules)",
+            long => "-source", short => $s, type => {binary, [<<"chunk">>, <<"beam">>]} },
+         #{ name => docsources, help => "chunk/beam files",
             long => "-doc-sources", short => $d, type => string, nargs => nonempty_list },
 
          %% output format

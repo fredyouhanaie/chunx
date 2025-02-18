@@ -14,7 +14,6 @@
 -export([all_mods/0]).
 -export([chunk_info/1]).
 -export([get_docs_from_beam/1, chunk_info_from_beam/1, beam_chunk_to_map/1]).
--export([get_docs_from_source/1]).
 -export([get_docs_from_chunk/1]).
 -export([untuplize/1]).
 
@@ -186,24 +185,6 @@ beam_chunk_to_map(File) ->
         {ok, {Mod, Chunk}} ->
             chunk_to_map(Mod, Chunk)
     end.
-
-%%--------------------------------------------------------------------
-%% @doc get the doc chunks from the source file
-%%
-%% This is equivalent to the edoc command:
-%%
-%% `edoc -chunks files FILENAME'
-%%
-%% The chunk file will end up in a subdirectory called `./chunks/'.
-%%
-%% @end
-%%--------------------------------------------------------------------
--spec get_docs_from_source(file:filename_all()) -> ok.
-get_docs_from_source(File) ->
-    Opts = [ {doclet, edoc_doclet_chunks},
-             {layout, edoc_layout_chunks},
-             {preprocess, true} ],
-    edoc:files([File], Opts).
 
 %%--------------------------------------------------------------------
 %% @doc get the doc chunks from the chunk file
